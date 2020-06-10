@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <script src="{% static 'jquery-3.5.1.js' %}"></script>
+    <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            {% csrf_token %}
+            {% for form in form_obj %}
+                <div class="form-group">
+                    <label for="{{ form.auto_id }}">{{ form.label }}</label>
+                    {{ form }}
+                    <span style="color: red">{{ form.errors.0 }}</span>
+                </div>
+            {% endfor %}
+
+            <div class="form-group">
+                <label for="">验证码</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="id_code">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{% url 'get_code' %}" alt="" id="code_img" width="380" height="35">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" id="login_btn"  value="登录">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    {# 点击验证码图片刷新验证码   #}
+    $('#code_img').click(function () {
+        $(this).attr('src', '{% url "get_code" %}?')
+    });
+
+    $('#login_btn').click(function () {
+        $.ajax({
+            url:'{% url "login" %}',
+            type: 'post',
+            data:{
+                'username': $('#id_username').val(),
+                'password': $('#id_password').val(),
+                'code': $('#id_code').val()
+            },
+            success: function (args) {
+                alert(args.code, args.msg);
+            }
+        })
+    })
+
+</script>
+<script src="{% static 'js/ajax_csrf.js' %}"></script>
+</body>
+</html>
