@@ -17,16 +17,11 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">BBS</a>
+            <a class="navbar-brand" href="#">{{ blog.blog_title }}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li><a href="#">link</a></li>
-                <li><a href="#">link</a></li>
-                <li><a href="#">link</a></li>
-            </ul>
 
             <ul class="nav navbar-nav navbar-right">
                 {% if request.user.is_authenticated %}
@@ -43,8 +38,10 @@
                     </li>
                 {% else %}
                     <li><a  href="" data-toggle="modal" data-target="#myModal">登录</a></li>
-                    <li><a  href="" data-toggle="modal" data-target="#myRegModal">注册</a></li>
+                    <li><a href="{% url 'register' %}">注册</a></li>
                 {% endif %}
+
+
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -53,32 +50,35 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3">
-            <div class="list-group">
-                <a href="#" class="list-group-item active">
-                    广告位出租
-                </a>
-                <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item">Morbi leo risus</a>
-                <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                <a href="#" class="list-group-item">Vestibulum at eros</a>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">文章标签</h3>
+                </div>
+                <div class="panel-body">
+                    {% for tag in tag_list %}
+                        <p><a href="/{{ username }}/tag/{{ tag.pk }}/">{{ tag.name }}({{tag.c}})</a></p>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="list-group">
-                <a href="#" class="list-group-item active">
-                    广告位出租
-                </a>
-                <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item">Morbi leo risus</a>
-                <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                <a href="#" class="list-group-item">Vestibulum at eros</a>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">文章分类</h3>
+                </div>
+                <div class="panel-body">
+                    {% for category in category_list %}
+                        <p><a href="/{{username}}/category/{{ category.pk }}">{{ category.name }}({{category.c}})</a></p>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="list-group">
-                <a href="#" class="list-group-item active">
-                    广告位出租
-                </a>
-                <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item">Morbi leo risus</a>
-                <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                <a href="#" class="list-group-item">Vestibulum at eros</a>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">文章归档</h3>
+                </div>
+                <div class="panel-body">
+                    {% for archive in archive_list %}
+                        <p><a href="/{{ username }}/archive/{{ archive.month|date:'Y-m' }}/">{{ archive.month|date:'Y年m月' }}({{ archive.c }})</a></p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="col-md-9">
@@ -86,20 +86,16 @@
                 {% for article in article_queryset %}
                     <li class="media">
                         <h4 class="media-heading"><a href="">{{ article.title }}</a></h4>
-                        <div class="media-left">
-                            <a href="#">
-                                <img class="media-object" src="/media/{{ article.blog.userinfo.avatar }}" alt="..." width="60px">
-                            </a>
-                        </div>
                         <div class="media-body">
                             {{ article.desc }}
-{#                            芒果和小猫 发布于 2020-06-11 15:27 评论(0)阅读(31)#}
-                            <div style="margin-top: 8px">
-                                <span><a href="/{{ article.blog.userinfo }}">{{ article.blog.userinfo }}</a>&nbsp;&nbsp;</span>
-                                <span>发布于&nbsp;&nbsp;</span>
+                            {# posted @ 2020-06-10 09:33 让我思考一下 阅读(91) 评论(1) 推荐(0) 编辑#}
+                            <div style="margin-top: 8px" class="pull-right">
+                                <span>posted @</span>
                                 <span>{{ article.publish_time|date:'Y-m-d H:m' }}&nbsp;&nbsp;</span>
+                                <span>{{ article.blog.userinfo}}&nbsp;&nbsp;</span>
                                 <span>评论({{ article.comment_counts }})&nbsp;&nbsp;</span>
-                                <span class="glyphicon glyphicon-thumbs-up">点赞({{ article.up_counts }})&nbsp;&nbsp;</span>
+                                <span class="glyphicon glyphicon-thumbs-up">点赞({{ article.up_counts }})</span>
+                                <span><a href="">编辑</a></span>
                             </div>
                         </div>
                     </li>
@@ -129,26 +125,6 @@
                 <span id="error_msg" style="color: red" class="pull-left"></span>
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" id="login_btn">登录</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 注册Modal -->
-<div class="modal fade" id="myRegModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">注册页面</h4>
-            </div>
-            <div class="modal-body">
-                {% include 'tmp_register.html' with form_obj=form_obj %}
-            </div>
-            <div class="modal-footer">
-                <span id="error_msg" style="color: red" class="pull-left"></span>
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="register_btn">注册</button>
             </div>
         </div>
     </div>
@@ -212,54 +188,6 @@
     });
 </script>
 
-{#注册ajax#}
-<script>
-    {# 选择图片立刻显示，文本域改变事件change, 文件阅读器对象FileReader #}
-    $('#id_avatar').change(function () {
-        let myFileReaderObj = new FileReader();
-        let fileObj = $(this)[0].files[0];
-        myFileReaderObj.readAsDataURL(fileObj);
-        myFileReaderObj.onload = function () {
-            $('#img_avatar').attr('src', myFileReaderObj.result)
-        }
-    });
-
-    {# ajax请求   #}
-    $('#register_btn').click(function () {
-        let formDataObj = new FormData();
-        $.each($('#myform').serializeArray(), function (index, obj) {
-            formDataObj.append(obj.name, obj.value);
-        });
-        formDataObj.append('avatar', $('#id_avatar')[0].files[0]);
-
-        $.ajax({
-            url:'{% url "register" %}',
-            type: 'post',
-            data: formDataObj,
-            contentType: false,
-            processData: false,
-            success: function (args) {
-                if (args.code === 1000){
-                    $('#myRegModal').modal('hide');
-                    swal("恭喜！", "账号注册成功，请登录", "success");
-
-                }else{
-                    $.each(args.msg, function (field, errors) {
-                        $(`#id_${field}`).next().text(errors[0]).parent().addClass('has-error');
-                    })
-                }
-            }
-        })
-    });
-
-    {# 聚焦输入框，提示信息消失 #}
-    $('input').click(function () {
-        $(this).next().text('').parent().removeClass('has-error');
-    })
-
-</script>
-
-
 {#修改密码ajax#}
 <script>
     // ajax提交数据
@@ -283,6 +211,7 @@
         })
     });
 </script>
+
 
 
 </body>

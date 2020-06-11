@@ -18,7 +18,11 @@ $('#login_btn').click(function () {
         success: function (args) {
             if (args.code === 1000){
                 $('#myModal').modal('hide');
-            }else{
+                window.location.reload();
+            }else if(args.code === 3000){
+                $('#error_msg').text(args.msg);
+            }
+            else{
                 console.log(args.msg);
                 $.each(args.msg, function (field, errors) {
                     $(`#${field}`).next().text(errors[0]).parent().addClass('has-error');

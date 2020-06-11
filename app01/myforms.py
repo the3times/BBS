@@ -51,7 +51,7 @@ class LoginForm(forms.Form):
                                error_messages={'required': '用户名不能为空'},
                                widget=forms.widgets.TextInput())
 
-    password = forms.CharField(label='密码', min_length=6, max_length=12,
+    password = forms.CharField(label='密码', min_length=3, max_length=12,
                                error_messages={
                                    'required': '密码不能为空',
                                    'min_length': '密码不能少于6位',
