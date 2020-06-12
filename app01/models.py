@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 
 class UserInfo(AbstractUser):
@@ -72,4 +73,5 @@ class Comment(models.Model):
     user = models.ForeignKey(to='UserInfo')
     article = models.ForeignKey(to='Article')
     content = models.CharField(max_length=256, verbose_name='评论内容')
+    comment_time = models.DateTimeField(auto_now_add=True, null=True, verbose_name='评论时间')
     parent = models.ForeignKey(to='self', null=True)

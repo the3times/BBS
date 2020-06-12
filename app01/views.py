@@ -3,12 +3,12 @@ from django.http import JsonResponse
 from django.views import View
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
+from django.db.models import F
+from django.db import transaction
 
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-import random, string
+import random, string, json
 from app01 import myforms, models
 
 
@@ -106,6 +106,7 @@ def get_code(request):
         img_draw.text((i*60+60, -2), tmp, get_random(), img_font)
 
     request.session['code'] = code.lower()
+    print(code)
     io_obj = BytesIO()
     img_obj.save(io_obj, 'png')
     return HttpResponse(io_obj.getvalue())
@@ -135,12 +136,70 @@ def blog(request, username, **kwargs):
             year, month = param.split('-')
             article_queryset = article_queryset.filter(publish_time__year=year,
                                                        publish_time__month=month).all()
-    # 标签、分类、归档ORM查询
-    tag_list = models.Tag.objects.filter(blog=blog).annotate(c=Count('article__pk')).values('pk', 'name', 'c')
-    category_list = models.Category.objects.filter(blog=blog).annotate(c=Count('article__pk')).values('pk', 'name', 'c')
-    # 日期归档查询使用django提供的TruncMonth自动按月截取，形成一个虚拟字段用于日期分组
-    archive_list = models.Article.objects.filter(blog=blog).\
-    annotate(month=TruncMonth('publish_time')).values('month').\
-        annotate(c=Count('pk')).order_by('-month').values('month', 'c')
 
     return render(request, 'blog.html', locals())
+
+
+def article_detail(request, username, article_id):
+    # 判断文章是否存在
+    article_obj = models.Article.objects.filter(pk=article_id,
+                                                blog__userinfo__username=username).first()
+    # username对应的主键为article_id的文章不存在
+    if not article_obj:
+        return render(request, 'error404.html')
+    comment_list = models.Comment.objects.filter(article__pk=article_id)
+    blog = article_obj.blog
+
+    return render(request, 'article_detail.html', locals())
+
+
+def up_and_down(request):
+    if request.is_ajax() and request.method == 'POST':
+        back_info = {'code': 1000}
+        article_id = request.POST.get('article_id')
+        is_up = json.loads(request.POST.get('is_up'))   # 反序列化成布尔型
+        print(article_id, is_up)
+        # 判断当前用户是否登录
+        if request.user.is_authenticated:
+            # 判断当前用户是否点赞自己的文章
+            if not models.Article.objects.filter(pk=article_id, blog__userinfo=request.user):
+                # 判断用户是否已经给这篇文章点过赞了
+                if not models.UpDown.objects.filter(user=request.user, article__pk=article_id):
+                    with transaction.atomic():
+                        if is_up:
+                            models.Article.objects.filter(pk=article_id).update(up_counts=F('up_counts')+1)
+                        else:
+                            models.Article.objects.filter(pk=article_id).update(down_counts=F('down_counts')+1)
+                        models.UpDown.objects.create(user=request.user, article_id=article_id, is_up=is_up)
+                        back_info['msg'] = '成功点赞' if is_up else '成功点踩'
+                else:
+                    action = models.UpDown.objects.filter(user=request.user, article__pk=article_id).first().is_up
+                    back_info['code'] = 1002
+                    back_info['msg'] = '您已经点赞了' if action else '您已经点踩了'
+            else:
+                back_info['code'] = 1003
+                back_info['msg'] = '不能给自己点赞哦'
+        else:
+            back_info['code'] = 1004
+            back_info['msg'] = '不<a href="/login/">登录</a>不让点'
+        return JsonResponse(back_info)
+
+
+@login_required
+def article_comment(request):
+    if request.is_ajax():
+        back_info = {'code': 1000}
+        article_id = request.POST.get('article_id')
+        content = request.POST.get('content')
+        parent_id = request.POST.get('parent_id')
+
+        if not content:
+            back_info['code'] = 2000
+            back_info['msg'] = '评论内容不能为空'
+            return JsonResponse(back_info)
+        with transaction.atomic():
+            models.Article.objects.filter(pk=article_id).update(comment_counts=F('comment_counts')+1)
+            models.Comment.objects.create(user=request.user, article_id=article_id, content=content, parent_id=parent_id)
+            back_info['msg'] = '评论成功'
+            return JsonResponse(back_info)
+

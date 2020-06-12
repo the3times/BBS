@@ -1,0 +1,148 @@
+{% extends 'blog_base.html' %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/up_down.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    {#    文章内容展示区start#}
+    <h1 class="text-center"><a href="">{{ article_obj.title }}</a></h1>
+    <div>{{ article_obj.content|safe }}</div>
+    {#    文章内容展示区end#}
+
+    {#    点赞点踩区start#}
+    <div class="clearfix">
+        <div id="div_digg">
+            <div class="diggit my_flag">
+                <span class="diggnum" id="digg_count">{{ article_obj.up_counts }}</span>
+            </div>
+            <div class="buryit my_flag">
+                <span class="burynum" id="bury_count">{{ article_obj.down_counts }}</span>
+            </div>
+            <div class="clear"></div>
+            <div class="diggword" id="digg_tips">
+            </div>
+            <span style="color: red" id="diggit_info"></span>
+        </div>
+    </div>
+    {#    点赞点踩区end#}
+
+    {#    评论列表展示区start#}
+    <div>
+        <h5>评论列表</h5>
+        <hr>
+        <ul class="list-group" id="comment_list">
+{#            #1楼 2020-05-06 19:04 立志做一个好的程序员#}
+            {% for comment in comment_list %}
+                <li class="list-group-item">
+                    <span>#{{ forloop.counter }}楼&nbsp;</span>
+                    <span>{{ comment.comment_time|date:'Y-m-d H:i'}}&nbsp;</span>
+                    <span><a href="/{{ comment.user }}/">{{ comment.user }}</a></span>
+                    <span class="pull-right"><a class="btn_reply" parentid="{{ comment.pk }}" replyto="{{ comment.user }}">回复</a></span>
+                    <p class="text-success">
+                        {% if comment.parent %}
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;@{{ comment.parent.user }}</span><br>
+                        {% endif %}
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ comment.content }}</span>
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {#    评论列表展示区end#}
+
+    {#    评论区start#}
+    {% if request.user.is_authenticated %}
+        <div id="comment_zone">
+            <h5 class="glyphicon glyphicon-comment">发表评论</h5>
+            <div class="form-group">
+                <textarea name="" class="form-control" id="comment_body" cols="60" rows="10"></textarea>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" id="btn_comment_submit">提交评论</button>
+                <span style="color: red; margin-left: 8px"  id="comment_back_info"></span>
+            </div>
+        </div>
+    {% endif %}
+    {#    评论区end#}
+{% endblock %}
+
+
+
+
+{% block js %}
+    {#    csrf请求伪造#}
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
+    {#    点赞js#}
+    <script>
+        $('.my_flag').click(function () {
+            let isUpDiv = $(this);
+            let isUp = isUpDiv.hasClass('diggit');
+            $.ajax({
+                url: '{% url "up_and_down" %}',
+                type: 'post',
+                data:{
+                    'article_id': {{ article_id }},
+                    'is_up': isUp
+                },
+                success: function (args) {
+                    if (args.code === 1000){
+                        $('#diggit_info').text(args.msg);
+                        let oldCount = isUpDiv.children().text();
+                        isUpDiv.children().text(Number(oldCount) + 1);
+                    }else{
+                        $('#diggit_info').html(args.msg)
+                    }
+                }
+            })
+        });
+    </script>
+    {#    评论js#}
+    <script>
+
+        {#  全局变量      #}
+        let parentId = null;
+
+        $('#btn_comment_submit').click(function () {
+            let commentBody = $('#comment_body');
+            let content = commentBody.val();
+            if (parentId){
+              let splitIndex = content.indexOf('\n') + 1;
+              content = content.slice(splitIndex);
+            }
+            $.ajax({
+                url: '{% url "article_comment" %}',
+                type: 'post',
+                data: {
+                    'article_id': '{{ article_id }}',
+                    'content': content,
+                    'parent_id': parentId,
+                },
+                success: function (args) {
+                    if (args.code === 1000){
+                        $('#comment_back_info').text(args.msg);
+                        commentBody.val('');
+                        let new_comment = `<li class="list-group-item">
+                                                <span class="glyphicon glyphicon-comment">{{ request.user }}</span>
+                                                <p class="small text-success">&nbsp;&nbsp;&nbsp;&nbsp;${content}</p>
+                                            </li>`;
+                        $('#comment_list').append(new_comment);
+                        parentId = null;        // 重置
+                    }else{
+                        $('#comment_back_info').text(args.msg);
+                    }
+                }
+            })
+        });
+        {#点击回复按钮事件#}
+        $('.btn_reply').click(function () {
+            let replayToUser = $(this).attr('replyto');  //获取回复对象
+            parentId = $(this).attr('parentid');     //获取回复评论的id
+            let reply_msg = '@' + replayToUser + '\n';   //构造提示信息
+            $('#comment_body').val(reply_msg).focus();
+
+        })
+    </script>
+{% endblock %}

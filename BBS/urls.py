@@ -30,7 +30,14 @@ urlpatterns = [
     url(r'reset_password/', views.reset_password, name='reset_password'),
     url(r'^media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 
-    url(r'^(?P<username>\w+)$', views.blog, name='blog'),
+
+    url(r'^(?P<username>\w+)/$', views.blog, name='blog'),    # 结尾处不加$
     url(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/', views.blog, name='blog'),
+
+    url(r'^(?P<username>\w+)/article/(?P<article_id>\d+)/', views.article_detail, name='article_detail'),
+
+    url(r'^up_and_down/&', views.up_and_down, name='up_and_down'),   # 加一个&是为了避免和个人站点url匹配冲突
+
+    url(r'^article/comment/', views.article_comment, name='article_comment')
 
 ]
