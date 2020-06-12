@@ -1,7 +1,7 @@
 {% extends 'blog_base.html' %}
 
+{% load static %}
 {% block css %}
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/up_down.css' %}">
 {% endblock %}
 
@@ -65,12 +65,11 @@
                 <span style="color: red; margin-left: 8px"  id="comment_back_info"></span>
             </div>
         </div>
+    {% else %}
+        <p><a href="{% url 'login' %}">登录</a>后才能评论哦</p>
     {% endif %}
     {#    评论区end#}
 {% endblock %}
-
-
-
 
 {% block js %}
     {#    csrf请求伪造#}
@@ -109,8 +108,8 @@
             let commentBody = $('#comment_body');
             let content = commentBody.val();
             if (parentId){
-              let splitIndex = content.indexOf('\n') + 1;
-              content = content.slice(splitIndex);
+                let splitIndex = content.indexOf('\n') + 1;
+                content = content.slice(splitIndex);
             }
             $.ajax({
                 url: '{% url "article_comment" %}',

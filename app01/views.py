@@ -49,7 +49,7 @@ class LoginView(View):
                 if user_obj:
                     auth.login(request, user_obj)
                     back_info['msg'] = '登录成功'
-                    back_info['url'] = reverse('login')
+                    back_info['url'] = reverse('index')
                 else:
                     back_info['code'] = 3000
                     back_info['msg'] = '用户名或密码错误'
@@ -60,6 +60,18 @@ class LoginView(View):
             back_info['code'] = 2000
             back_info['msg'] = form_obj.errors
         return JsonResponse(back_info)
+
+
+def get_user_avatar(request):
+    if request.is_ajax() and request.method == 'POST':
+        back_info = {'avatar': ''}
+        username = request.POST.get('username')
+        user_obj = models.UserInfo.objects.filter(username=username).first()
+        if user_obj:
+            back_info['avatar'] = user_obj.avatar.name  # 'avatar/default.png'
+        return JsonResponse(back_info)
+    else:
+        return render(request, 'error404.html')
 
 
 @login_required
@@ -86,6 +98,8 @@ def reset_password(request):
                 back_info['code'] = 2000
                 back_info['msg'] = '两次密码输入不一致或密码输入为空'
         return JsonResponse(back_info)
+    else:
+        return render(request, 'error404.html')
 
 
 def get_code(request):
@@ -183,6 +197,8 @@ def up_and_down(request):
             back_info['code'] = 1004
             back_info['msg'] = '不<a href="/login/">登录</a>不让点'
         return JsonResponse(back_info)
+    else:
+        return render(request, 'error404.html')
 
 
 @login_required
@@ -202,4 +218,6 @@ def article_comment(request):
             models.Comment.objects.create(user=request.user, article_id=article_id, content=content, parent_id=parent_id)
             back_info['msg'] = '评论成功'
             return JsonResponse(back_info)
+    else:
+        return render(request, 'error404.html')
 

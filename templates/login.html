@@ -13,8 +13,8 @@
 <body>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+    <div class="row" style="margin-top: 100px">
+        <div class="col-md-4 col-md-offset-4">
             {% csrf_token %}
             {% for form in form_obj %}
                 <div class="form-group">
@@ -27,11 +27,11 @@
             <div class="form-group">
                 <label for="">验证码</label>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <input type="text" class="form-control" id="id_code">
                     </div>
-                    <div class="col-md-6">
-                        <img src="{% url 'get_code' %}" alt="" id="code_img" width="380" height="35">
+                    <div class="col-md-8">
+                        <img src="{% url 'get_code' %}" alt="" id="code_img" width="230" height="35">
                     </div>
                 </div>
             </div>
@@ -48,7 +48,8 @@
 <script>
     {# 点击验证码图片刷新验证码   #}
     $('#code_img').click(function () {
-        $(this).attr('src', '{% url "get_code" %}?')
+        let oldValue = $(this).attr('src');
+        $(this).attr('src', oldValue+'?')
     });
 
     $('#login_btn').click(function () {
@@ -61,7 +62,7 @@
                 'code': $('#id_code').val()
             },
             success: function (args) {
-                alert(args.code, args.msg);
+                window.location.href = args.url;
             }
         })
     })
