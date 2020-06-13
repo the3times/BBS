@@ -37,7 +37,7 @@
 {% block right_content %}
     <div class="col-md-9">
         <ul class="media-list">
-            {% for article in article_queryset %}
+            {% for article in page_queryset %}
                 <li class="media">
                     <h4 class="media-heading"><a href="/{{ article.blog.userinfo }}/article/{{ article.pk }}">{{ article.title }}</a></h4>
                     <div class="media-left">
@@ -63,5 +63,7 @@
 
         </ul>
 
+        {#分页器#}
+        {% include 'mypagination.html' %}
     </div>
 {% endblock %}

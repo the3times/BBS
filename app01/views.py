@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import random, string, json
 from app01 import myforms, models
+from app01.utils.mypagination import Pagination
 
 
 class RegView(View):
@@ -48,7 +49,8 @@ class LoginView(View):
                 if user_obj:
                     auth.login(request, user_obj)
                     back_info['msg'] = '登录成功'
-                    back_info['url'] = reverse('index')
+                    target_url = reverse('blog', args=(user_obj.username,))
+                    back_info['url'] = target_url
                 else:
                     back_info['code'] = 3000
                     back_info['msg'] = '用户名或密码错误'
@@ -127,6 +129,15 @@ def get_code(request):
 
 def index(request):
     article_queryset = models.Article.objects.all()
+
+    current_page = request.GET.get('page', 1)
+    all_count = article_queryset.count()
+    # 1 传值实例化对象
+    page_obj = Pagination(current_page=current_page, all_count=all_count)
+    # 2 直接对总数据进行切片操作
+    page_queryset = article_queryset[page_obj.start:page_obj.end]
+    # 3 将page_queryset传递到页面，替换之前的book_queryset
+
     return render(request, 'index.html', locals())
 
 
@@ -149,6 +160,10 @@ def blog(request, username, **kwargs):
             article_queryset = article_queryset.filter(publish_time__year=year,
                                                        publish_time__month=month).all()
 
+    current_page = request.GET.get('page', 1)
+    all_count = article_queryset.count()
+    page_obj = Pagination(current_page=current_page, all_count=all_count)
+    page_queryset = article_queryset[page_obj.start:page_obj.end]
     return render(request, 'blog.html', locals())
 
 
@@ -160,7 +175,7 @@ def article_detail(request, username, article_id):
     if not article_obj:
         return render(request, 'error404.html')
     comment_list = models.Comment.objects.filter(article__pk=article_id)
-    blog = article_obj.blog
+    # blog = article_obj.blog
 
     return render(request, 'article_detail.html', locals())
 

@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
     url(r'^get_user_avatar/', views.get_user_avatar),
 
-    url(r'^(?P<username>\w+)/$', views.blog, name='blog'),    # 结尾处不加$
+    url(r'^(?P<username>\w+)/$', views.blog, name='blog'),    # 结尾处加/$
     url(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/', views.blog, name='blog'),
 
     url(r'^(?P<username>\w+)/article/(?P<article_id>\d+)/', views.article_detail, name='article_detail'),
