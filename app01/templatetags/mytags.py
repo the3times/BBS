@@ -2,7 +2,7 @@ from django import template
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 
-from app01 import models
+from app01 import models, myforms
 
 
 register = template.Library()
@@ -20,4 +20,10 @@ def side_bar(username):
         annotate(month=TruncMonth('publish_time')).values('month'). \
         annotate(c=Count('pk')).order_by('-month').values('month', 'c')
 
+    return locals()
+
+
+@register.inclusion_tag('tmp_register.html')
+def reg_form():
+    form_obj = myforms.RegForm()
     return locals()

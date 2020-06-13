@@ -30,13 +30,13 @@ class RegView(View):
         else:
             back_info['code'] = 2000
             back_info['msg'] = form_obj.errors
+            print(form_obj.errors)
 
         return JsonResponse(back_info)
 
 
 class LoginView(View):
     def get(self, request):
-        form_obj = myforms.LoginForm()
         return render(request, 'login.html', locals())
 
     def post(self, request):

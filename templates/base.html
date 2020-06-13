@@ -98,7 +98,8 @@
                 <h4 class="modal-title" id="myModalLabel">注册页面</h4>
             </div>
             <div class="modal-body">
-                {% include 'alert_register.html' with form_obj=form_obj %}
+                {% load mytags %}
+                {% reg_form %}
             </div>
             <div class="modal-footer">
                 <span id="error_msg" style="color: red" class="pull-left"></span>
@@ -139,6 +140,8 @@
 {#登录校验-ajax发送数据#}
 <script src="{% static 'js/login_ajax.js' %}"></script>
 
+{#注册js#}
+<script src="{% static 'js/register.js' %}"></script>
 
 {% block js %}
 {% endblock %}

@@ -8,8 +8,8 @@ $('#login_btn').click(function () {
         url:'/login/',
         type: 'post',
         data:{
-            'username': $('#id_username').val(),
-            'password': $('#id_password').val(),
+            'username': $('#username').val(),
+            'password': $('#password').val(),
             'code': $('#id_code').val()
         },
         success: function (args) {
@@ -22,7 +22,7 @@ $('#login_btn').click(function () {
             else{
                 console.log(args.msg);
                 $.each(args.msg, function (field, errors) {
-                    $(`#id_${field}`).next().text(errors[0]).parent().addClass('has-error');
+                    $('#'+field).next().text(errors[0]).parent().addClass('has-error');
                 })
             }
         }

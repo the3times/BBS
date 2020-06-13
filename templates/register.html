@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
 </head>
 <body>
-    <div class="container-fluid">
+<div class="container-fluid">
         <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <h3 class="text-center">注册页面</h3>
@@ -30,57 +30,14 @@
                     <input type="file" id="id_avatar" name="avatar" style="display: none">
                 </label>
             </div>
-            <input type="button" id="reg_btn" class="btn btn-primary pull-right" value="注册">
+            <input type="button" id="register_btn" class="btn btn-primary pull-right" value="注册">
             </form>
         </div>
 
         </div>
     </div>
 
-    <script>
-        {# 选择图片立刻显示，文本域改变事件change, 文件阅读器对象FileReader #}
-        $('#id_avatar').change(function () {
-            let myFileReaderObj = new FileReader();
-            let fileObj = $(this)[0].files[0];
-            myFileReaderObj.readAsDataURL(fileObj);
-            myFileReaderObj.onload = function () {
-                $('#img_avatar').attr('src', myFileReaderObj.result)
-            }
-        });
 
-        {# ajax请求   #}
-        $('#reg_btn').click(function () {
-            let formDataObj = new FormData();
-            $.each($('#myform').serializeArray(), function (index, obj) {
-                formDataObj.append(obj.name, obj.value);
-            });
-            formDataObj.append('avatar', $('#id_avatar')[0].files[0]);
-
-            $.ajax({
-                url:'{% url "register" %}',
-                type: 'post',
-                data: formDataObj,
-                contentType: false,
-                processData: false,
-                success: function (args) {
-                    if (args.code === 1000){
-                        window.location.href = args.url;
-                    }else{
-                        $.each(args.msg, function (field, errors) {
-                            $(`#id_${field}`).next().text(errors[0]).parent().addClass('has-error');
-                        })
-                    }
-                }
-            })
-        });
-
-        {# 聚焦输入框，提示信息消失 #}
-        $('input').click(function () {
-            $(this).next().text('').parent().removeClass('has-error');
-        })
-
-    </script>
-
-
+<script src="{% static 'js/register.js' %}"></script>
 </body>
 </html>
