@@ -8,34 +8,22 @@
     {% load static %}
     <script src="{% static 'jquery-3.5.1.js' %}"></script>
     <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'sweet-alert-dist/sweetalert.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'sweet-alert-dist/sweetalert.css' %}">
 </head>
 <body>
 <div class="container-fluid">
-        <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <h3 class="text-center">注册页面</h3>
-            <form id="myform">
-                {% csrf_token %}
-                {% for form in form_obj %}
-                    <div class="form-group">
-                        <label for="{{ form.auto_id }}">{{ form.label }}</label>
-                        {{ form }}
-                        <span style="color: red" class="pull-right">{{ form.errors.0 }}</span>
-                    </div>
-                {% endfor %}
-            <div class="form-group">
-                <label for="id_avatar">头像
-                    <img src="{% static 'img/default.png' %}" alt="" id="img_avatar" width="100" style="margin-left: 10px">
-                    <input type="file" id="id_avatar" name="avatar" style="display: none">
-                </label>
-            </div>
-            <input type="button" id="register_btn" class="btn btn-primary pull-right" value="注册">
-            </form>
-        </div>
-
-        </div>
+    <div class="col-md-6 col-md-offset-3">
+        <h3 class="text-center">注册页面</h3>
+        {% load mytags %}
+        {% reg_form %}
+        <input type="button" id="register_btn" class="btn btn-primary btn-block" value="注册">
+        <hr>
+        <span class="text-info pull-right">已有账号，<a href="{% url 'login' %}"><strong>直接登录</strong></a></span>
     </div>
+
+</div>
 
 
 <script src="{% static 'js/register.js' %}"></script>

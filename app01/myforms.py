@@ -32,6 +32,12 @@ class RegForm(forms.Form):
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
 
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            # 单例模式
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if models.UserInfo.objects.filter(username=username):

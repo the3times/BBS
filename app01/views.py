@@ -30,7 +30,6 @@ class RegView(View):
         else:
             back_info['code'] = 2000
             back_info['msg'] = form_obj.errors
-            print(form_obj.errors)
 
         return JsonResponse(back_info)
 
@@ -128,7 +127,6 @@ def get_code(request):
 
 def index(request):
     article_queryset = models.Article.objects.all()
-    form_obj = myforms.RegForm()
     return render(request, 'index.html', locals())
 
 
