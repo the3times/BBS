@@ -3,6 +3,7 @@
 {% load static %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/up_down.css' %}">
+    <link rel="stylesheet" href="{% static 'css/comment_list.css' %}">
 {% endblock %}
 
 
@@ -37,16 +38,22 @@
 {#            #1楼 2020-05-06 19:04 立志做一个好的程序员#}
             {% for comment in comment_list %}
                 <li class="list-group-item">
-                    <span>#{{ forloop.counter }}楼&nbsp;</span>
+                    <span class="text-info">#{{ forloop.counter }}楼&nbsp;</span>
                     <span>{{ comment.comment_time|date:'Y-m-d H:i'}}&nbsp;</span>
                     <span><a href="/{{ comment.user }}/">{{ comment.user }}</a></span>
                     <span class="pull-right"><a class="btn_reply" parentid="{{ comment.pk }}" replyto="{{ comment.user }}">回复</a></span>
-                    <p class="text-success">
-                        {% if comment.parent %}
-                            <span>&nbsp;&nbsp;&nbsp;&nbsp;@{{ comment.parent.user }}</span><br>
-                        {% endif %}
-                        <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ comment.content }}</span>
-                    </p>
+                    <div class="row">
+                        <div class="col-md-1 comment_avatar">
+                            <img src="/media/{{ comment.user.avatar }}/" alt="" class="img-circle user_avatar">
+                        </div>
+                        <div class="col-md-11 comment_detail">
+                            {% if comment.parent %}
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;@{{ comment.parent.user }}</span><br>
+                            {% endif %}
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ comment.content }}</p>
+                        </div>
+
+                    </div>
                 </li>
             {% endfor %}
         </ul>
@@ -128,7 +135,7 @@
                                                 <p class="small text-success">&nbsp;&nbsp;&nbsp;&nbsp;${content}</p>
                                             </li>`;
                         $('#comment_list').append(new_comment);
-                        parentId = null;        // 重置
+                        parentId = null;        // 重置,避免子评论后无法根评论
                     }else{
                         $('#comment_back_info').text(args.msg);
                     }

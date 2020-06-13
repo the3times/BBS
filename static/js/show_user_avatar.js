@@ -1,13 +1,13 @@
 $(function () {
 
     //输入用户名，提示头像信息事件
-    $("#username").change(function () {
+    $("#id_username").change(function () {
 
         $.ajax({
             url: "/get_user_avatar/",
             type: "post",
             data: {
-                'username': $("#username").val(),
+                'username': $("#id_username").val(),
             },
             success: function (args) {
                 if (args.avatar) {

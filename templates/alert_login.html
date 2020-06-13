@@ -3,20 +3,20 @@
         <div class="col-md-12">
             {% csrf_token %}
             <div class="form-group">
-                <label for="username">用户名</label>
-                <input type="text" id="username" class="form-control">
+                <label for="id_username">用户名</label>
+                <input type="text" id="id_username" class="form-control">
                 <span style="color: red" class="pull-right"></span>
             </div>
             <div class="form-group">
-                <label for="password">密码</label>
-                <input type="password" id="password" class="form-control">
+                <label for="id_password">密码</label>
+                <input type="password" id="id_password" class="form-control">
                 <span style="color: red" class="pull-right"></span>
             </div>
             <div class="form-group">
-                <label for="">验证码</label>
+                <label for="id_code">验证码</label>
                 <div class="row">
                     <div class="col-md-6">
-                        <input type="text" class="form-control" id="code">
+                        <input type="text" class="form-control" id="id_code">
                     </div>
                     <div class="col-md-6">
                         <img src="{% url 'get_code' %}" alt="" id="code_img" width="230" height="35">

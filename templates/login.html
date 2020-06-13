@@ -9,18 +9,25 @@
     <script src="{% static 'jquery-3.5.1.js' %}"></script>
     <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/user_avatar.css' %}">
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="row" style="margin-top: 100px">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col-md-4 col-md-offset-4 login_zone">
+            <div class="text-center">
+                <img src="/static/img/default.png/" alt="" class="user_avatar img-circle" id="login_show_avatar">
+                <hr>
+                <p><strong class="text-info">代码改变世界</strong></p>
+            </div>
+            <br>
             {% csrf_token %}
             {% for form in form_obj %}
                 <div class="form-group">
                     <label for="{{ form.auto_id }}">{{ form.label }}</label>
                     {{ form }}
-                    <span style="color: red">{{ form.errors.0 }}</span>
+                    <span style="color: red" class="pull-right">{{ form.errors.0 }}</span>
                 </div>
             {% endfor %}
 
@@ -29,6 +36,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <input type="text" class="form-control" id="id_code">
+                        <span id="error_msg" style="color: red" class="pull-left"></span>
                     </div>
                     <div class="col-md-8">
                         <img src="{% url 'get_code' %}" alt="" id="code_img" width="230" height="35">
@@ -37,7 +45,8 @@
             </div>
 
             <div class="form-group">
-                <input type="button" class="btn btn-primary" id="login_btn"  value="登录">
+                <input type="button" class="btn btn-primary pull-right" id="login_btn"  value="登录">
+                <br><br>
             </div>
         </div>
 
@@ -45,29 +54,8 @@
 </div>
 
 
-<script>
-    {# 点击验证码图片刷新验证码   #}
-    $('#code_img').click(function () {
-        let oldValue = $(this).attr('src');
-        $(this).attr('src', oldValue+'?')
-    });
-
-    $('#login_btn').click(function () {
-        $.ajax({
-            url:'{% url "login" %}',
-            type: 'post',
-            data:{
-                'username': $('#id_username').val(),
-                'password': $('#id_password').val(),
-                'code': $('#id_code').val()
-            },
-            success: function (args) {
-                window.location.href = args.url;
-            }
-        })
-    })
-
-</script>
 <script src="{% static 'js/ajax_csrf.js' %}"></script>
+<script src="{% static 'js/show_user_avatar.js' %}"></script>
+<script src="{% static 'js/login_ajax.js' %}"></script>
 </body>
 </html>
