@@ -49,7 +49,10 @@ class LoginView(View):
                 if user_obj:
                     auth.login(request, user_obj)
                     back_info['msg'] = '登录成功'
-                    target_url = reverse('blog', args=(user_obj.username,))
+                    target_url = request.POST.get('target_url', 'login')
+                    # 单纯的登录页面登录
+                    if 'login' in target_url:
+                        target_url = reverse('blog', args=(user_obj.username, ))
                     back_info['url'] = target_url
                 else:
                     back_info['code'] = 3000

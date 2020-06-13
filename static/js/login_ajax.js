@@ -10,7 +10,8 @@ $('#login_btn').click(function () {
         data:{
             'username': $('#username').val(),
             'password': $('#password').val(),
-            'code': $('#id_code').val()
+            'code': $('#id_code').val(),
+            'target_url': window.location.href,
         },
         success: function (args) {
             if (args.code === 1000){
