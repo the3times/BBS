@@ -6,6 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
+    {% load mytags %}
     <script src="{% static 'jquery-3.5.1.js' %}"></script>
     <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'sweet-alert-dist/sweetalert.min.js' %}"></script>
@@ -32,9 +33,10 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                {% if request.user.is_authenticated %}
-                    <li><img src="/media/{{request.user.avatar }}/" alt="" class="img-circle user_avatar"></li>
-                    <li><a href="{% url 'blog' request.user %}">{{ request.user }}</a></li>
+                {% if user.is_authenticated %}
+                    {# 可以在模版文件中直接使用user，既是后端不给模版文件传值，这是因为配置文件中有模版的上下文管理机制#}
+                    <li><img src="/media/{{user.avatar }}/" alt="" class="img-circle user_avatar"></li>
+                    <li><a href="{% url 'blog' user %}">{{ user }}</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多 <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -98,7 +100,7 @@
                 <h4 class="modal-title" id="myModalLabel">注册页面</h4>
             </div>
             <div class="modal-body">
-                {% load mytags %}
+
                 {% reg_form %}
             </div>
             <div class="modal-footer">

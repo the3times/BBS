@@ -71,8 +71,9 @@ def get_user_avatar(request):
         back_info = {'avatar': ''}
         username = request.POST.get('username')
         user_obj = models.UserInfo.objects.filter(username=username).first()
-        if user_obj:
-            back_info['avatar'] = user_obj.avatar.name  # 'avatar/default.png'
+        # user_obj.avatar.name, 'avatar/xxx.png'
+        user_avatar = user_obj.avatar.name if user_obj else '/avatar/default.png'
+        back_info['avatar'] = user_avatar
         return JsonResponse(back_info)
     else:
         return render(request, 'error404.html')
