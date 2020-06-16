@@ -306,6 +306,38 @@ class ArticleAddView(View):
             return render(request, 'backend/article_add.html', locals())
 
 
+class ArticleEditView(View):
+    @method_decorator(login_required)
+    def get(self, request, article_id):
+        article_obj = models.Article.objects.filter(pk=article_id).first()
+        if not article_obj:
+            return render(request, 'error404.html')
+        form_obj = myforms.ArticleEditForm(initial={'title': article_obj.title,
+                                                    'content': article_obj.content})
+        category_list = models.Category.objects.filter(blog=request.user.blog)
+        tag_list = models.Tag.objects.filter(blog=request.user.blog)
+        return render(request, 'backend/article_edit.html', locals())
+
+    @method_decorator(login_required)
+    def post(self, request, article_id):
+        form_obj = myforms.ArticleEditForm(request.POST)
+        category_list = models.Category.objects.filter(blog=request.user.blog)
+        tag_list = models.Tag.objects.filter(blog=request.user.blog)
+        if form_obj.is_valid():
+            title = form_obj.cleaned_data.get('title')
+            content = form_obj.cleaned_data.get('content')
+            soup = pre_xss(content)
+            category = request.POST.get('category')
+            tag_id_list = request.POST.getlist('tag')
+            with transaction.atomic():
+                models.Article.objects.filter(pk=article_id).\
+                    update(title=title, content=str(soup), desc=soup.text[0:150], category_id=category)
+                models.Article2Tag.objects.filter(article_id=article_id).delete()
+                tag_tmp_list = (models.Article2Tag(article_id=article_id, tag_id=tag) for tag in tag_id_list)
+                models.Article2Tag.objects.bulk_create(tag_tmp_list)
+            return redirect('backend')
+        return render(request, 'backend/article_edit.html', locals())
+
 @login_required
 def article_delete(request, article_id):
     article_obj = models.Article.objects.filter(pk=article_id).first()

@@ -19,7 +19,7 @@
                     <td>{{ article.publish_time|date:'Y-m-d H:i:s' }}</td>
                     <td>{{ article.comment_counts }}</td>
                     <td>{{ article.up_counts }}</td>
-                    <td><a href="">编辑</a></td>
+                    <td><a href="{% url 'article_edit' article.pk %}">编辑</a></td>
                     <td><a href="{% url 'article_delete' article.pk %}">删除</a></td>
                 </tr>
             {% endfor %}

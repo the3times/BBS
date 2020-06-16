@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^i/backend/', views.backend, name='backend'),
     url(r'^article/add/', views.ArticleAddView.as_view(), name='article_add'),
     url(r'^upload/article_img/', views.upload_img, name='upload_img'),
+    url(r'^article/edit/(\d+)/', views.ArticleEditView.as_view(), name='article_edit'),
     url(r'^article/delete/(\d+)/', views.article_delete, name='article_delete'),
 
 ]
