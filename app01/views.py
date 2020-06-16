@@ -1,16 +1,19 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.http import JsonResponse
 from django.views import View
+from django.utils.decorators import method_decorator
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.db import transaction
+from app01 import myforms, models
+from app01.utils.mypagination import Pagination
+from app01.utils.my_xss import pre_xss
+from app01.utils.save_image import save_image
 
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import random, string, json
-from app01 import myforms, models
-from app01.utils.mypagination import Pagination
 
 
 class RegView(View):
@@ -237,4 +240,77 @@ def article_comment(request):
             return JsonResponse(back_info)
     else:
         return render(request, 'error404.html')
+
+
+@login_required
+def backend(request):
+    article_list = models.Article.objects.filter(blog__userinfo=request.user)
+    current_page = request.GET.get('page', 1)
+    all_count = article_list.count()
+    page_obj = Pagination(current_page=current_page, all_count=all_count)
+    page_queryset = article_list[page_obj.start:page_obj.end]
+
+    return render(request, 'backend/backend.html', locals())
+
+
+@login_required
+def upload_img(request):
+    back_info = {"error": 0}
+    file_obj = request.FILES.get('imgFile')
+    file_naw_path, file_new_name = save_image(file_obj)
+    back_info['url'] = f'/media/images/{file_new_name}/'
+    return JsonResponse(back_info)
+
+
+@login_required
+def change_avatar(request):
+    if request.is_ajax():
+        back_info = {'code':1000}
+        avatar = request.FILES.get('avatar')
+        request.user.avatar = avatar       # 自动拼接头像字段路径
+        request.user.save()
+        return JsonResponse(back_info)
+    else:
+        return render(request, 'error404.html')
+
+
+class ArticleAddView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        category_list = models.Category.objects.filter(blog__userinfo=request.user)
+        tag_list = models.Tag.objects.filter(blog__userinfo=request.user)
+        return render(request, 'backend/article_add.html', locals())
+
+    @method_decorator(login_required)
+    def post(self, request):
+        form_obj = myforms.ArticleAddForm(request.POST)
+        if form_obj.is_valid():
+            title = form_obj.cleaned_data.get('title')
+            content = form_obj.cleaned_data.get('content')
+            # 预防xss攻击
+            soup = pre_xss(content)
+            category_id = request.POST.get('category')
+            tag_id_list = request.POST.getlist('tag')
+            with transaction.atomic():
+                article_obj = models.Article.objects.create(title=title,
+                                                            content=str(soup),        # 使用去除了script的文章内容
+                                                            desc=soup.text[0:150],
+                                                            blog=request.user.blog,
+                                                            category_id=category_id)
+                tag_tmp_list = (models.Article2Tag(article=article_obj, tag_id=tag) for tag in tag_id_list)
+                models.Article2Tag.objects.bulk_create(tag_tmp_list)
+            return redirect('backend')
+        else:
+            category_list = models.Category.objects.filter(blog__userinfo=request.user)
+            tag_list = models.Tag.objects.filter(blog__userinfo=request.user)
+            return render(request, 'backend/article_add.html', locals())
+
+
+@login_required
+def article_delete(request, article_id):
+    article_obj = models.Article.objects.filter(pk=article_id).first()
+    if not article_obj:
+        return render(request, 'error404.html')
+    article_obj.delete()
+    return redirect('backend')
 

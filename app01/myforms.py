@@ -68,3 +68,8 @@ class LoginForm(forms.Form):
         super().__init__(*args, **kwargs)
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
+
+
+class ArticleAddForm(forms.Form):
+    title = forms.CharField(label='标题', error_messages={'required': '标题不能为空'})
+    content = forms.CharField(label='文章内容', error_messages={'required': '文章内容不能为空'})

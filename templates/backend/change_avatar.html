@@ -1,0 +1,17 @@
+{% load static %}
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="myform">
+            <div class="form-group">
+                <label for="id_avatar">点击一下，修改头像
+                    <img src="/media/{{ user.avatar }}/" alt="" id="img_avatar" width="100" style="margin-left: 10px">
+                    <input type="file" id="id_avatar" name="avatar" style="display: none">
+                </label>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="{% static 'js/ajax_csrf.js' %}"></script>

@@ -3,12 +3,11 @@
 <div class="row">
     <div class="col-md-12">
         <form id="myform">
-            {% load mytags %}
             {% for form in form_obj %}
                 <div class="form-group">
                     <label for="{{ form.auto_id }}">{{ form.label }}</label>
                     {{ form }}
-                    <span style="color: red" class="pull-right">{{ form.errors.0 }}</span>
+                    <span style="color: red" class="pull-right"></span>
                 </div>
             {% endfor %}
             <div class="form-group">

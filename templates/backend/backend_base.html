@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>后台管理</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <script src="{% static 'jquery-3.5.1.js' %}"></script>
+    <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+    <script src="{% static 'sweet-alert-dist/sweetalert.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'sweet-alert-dist/sweetalert.css' %}">
+    {% block css %}
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'index' %}">BBS</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                <li><a href="#">Link</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'blog' user.username %}">个人主页</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                操作
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <p><a href="{% url 'article_add' %}">添加文章</a></p>
+                            <p><a href="">添加随笔</a></p>
+                            <p><a href="">添加日记</a></p>
+                            <p><a data-toggle="modal" data-target="#mySetPwdModal">修改密码</a></p>
+                            <p><a data-toggle="modal" data-target="#changeAvatar">修改头像</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            {% block contetn %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading"></div>
+                    <div class="panel-body">
+                        <div>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#article" aria-controls="home" role="tab" data-toggle="tab">文章</a></li>
+                                <li role="presentation"><a href="#assay" aria-controls="profile" role="tab" data-toggle="tab">随笔</a></li>
+                                <li role="presentation"><a href="#diary" aria-controls="messages" role="tab" data-toggle="tab">日记</a></li>
+                                <li role="presentation"><a href="#others" aria-controls="settings" role="tab" data-toggle="tab">其他</a></li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="article">
+                                    {% block article_content %}
+                                    {% endblock %}
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="assay">功能待开发...</div>
+                                <div role="tabpanel" class="tab-pane" id="diary">功能待开发...</div>
+                                <div role="tabpanel" class="tab-pane" id="others">功能待开发...</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- 修改密码Modal -->
+<div class="modal fade" id="mySetPwdModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+            </div>
+            <div class="modal-body">
+                {% include 'backend/reset_password.html' %}
+            </div>
+            <div class="modal-footer">
+                <span id="setpwd_error_msg" style="color: red" class="pull-left"></span>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="resetpwd_btn">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 修改头像Modal -->
+<div class="modal fade" id="changeAvatar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改头像</h4>
+            </div>
+            <div class="modal-body">
+                {% include 'backend/change_avatar.html' %}
+            </div>
+            <div class="modal-footer">
+                <span id="error_msg" style="color: red" class="pull-left"></span>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirm_btn">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block js %}
+
+    {#  修改头像  #}
+    <script>
+        {# 选择图片立刻显示，文本域改变事件change, 文件阅读器对象FileReader #}
+        $('#id_avatar').change(function () {
+            let myFileReaderObj = new FileReader();
+            let fileObj = $(this)[0].files[0];
+            myFileReaderObj.readAsDataURL(fileObj);
+            myFileReaderObj.onload = function () {
+                $('#img_avatar').attr('src', myFileReaderObj.result)
+            }
+        });
+
+        {# ajax请求   #}
+        $('#confirm_btn').click(function () {
+            let formDataObj = new FormData();
+            formDataObj.append('avatar', $('#id_avatar')[0].files[0]);
+
+            $.ajax({
+                url:'{% url "change_avatar" %}',
+                type: 'post',
+                data: formDataObj,
+                contentType: false,
+                processData: false,
+                success: function (args) {
+                    if (args.code === 1000){
+                        $('#changeAvatar').modal('hide');
+                        swal("恭喜！", "头像修改成功", "success");
+                    }
+                }
+            })
+        });
+
+    </script>
+
+    {#修改密码ajax#}
+    <script src="{% static 'js/reset_password.js' %}"></script>
+
+{% endblock %}
+
+</body>
+</html>

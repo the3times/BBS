@@ -22,12 +22,13 @@ from BBS import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'register/', views.RegView.as_view(), name='register'),
-    url(r'login/', views.LoginView.as_view(), name='login'),
-    url(r'logout/', views.logout, name='logout'),
-    url(r'get_code/', views.get_code, name='get_code'),
-    url(r'index/', views.index, name='index'),
-    url(r'reset_password/', views.reset_password, name='reset_password'),
+    url(r'^register/', views.RegView.as_view(), name='register'),
+    url(r'^login/', views.LoginView.as_view(), name='login'),
+    url(r'^logout/', views.logout, name='logout'),
+    url(r'^get_code/', views.get_code, name='get_code'),
+    url(r'^index/', views.index, name='index'),
+    url(r'^reset_password/', views.reset_password, name='reset_password'),
+    url(r'^change/avatar/', views.change_avatar, name='change_avatar'),
     url(r'^media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
     url(r'^get_user_avatar/', views.get_user_avatar),
 
@@ -38,6 +39,11 @@ urlpatterns = [
 
     url(r'^up_and_down/&', views.up_and_down, name='up_and_down'),   # 加一个&是为了避免和个人站点url匹配冲突
 
-    url(r'^article/comment/', views.article_comment, name='article_comment')
+    url(r'^article/comment/', views.article_comment, name='article_comment'),
+
+    url(r'^i/backend/', views.backend, name='backend'),
+    url(r'^article/add/', views.ArticleAddView.as_view(), name='article_add'),
+    url(r'^upload/article_img/', views.upload_img, name='upload_img'),
+    url(r'^article/delete/(\d+)/', views.article_delete, name='article_delete'),
 
 ]

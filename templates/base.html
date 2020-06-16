@@ -40,9 +40,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多 <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="" data-toggle="modal" data-target="#mySetPwdModal">修改密码</a></li>
-                            <li><a href="#">修改头像</a></li>
-                            <li><a href="#">后台管理</a></li>
+                            <li><a href="{% url 'backend' %}">后台管理</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="{% url 'logout' %}">退出</a></li>
                         </ul>
@@ -112,29 +110,6 @@
     </div>
 </div>
 
-<!-- 修改密码Modal -->
-<div class="modal fade" id="mySetPwdModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">修改密码</h4>
-            </div>
-            <div class="modal-body">
-                {% include 'reset_password.html'%}
-            </div>
-            <div class="modal-footer">
-                <span id="setpwd_error_msg" style="color: red" class="pull-left"></span>
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="resetpwd_btn">确定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-{#修改密码ajax#}
-<script src="{% static 'js/reset_password.js' %}"></script>
 
 {#登录用户头像显自动示#}
 <script src="{% static 'js/show_user_avatar.js' %}"></script>

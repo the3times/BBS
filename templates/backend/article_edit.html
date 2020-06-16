@@ -1,0 +1,36 @@
+{% extends 'backend/backend_base.html' %}
+
+
+{% block article_content %}
+    <form action="{% url 'article_edit' article_id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for form in form_obj %}
+            <div class="form-group {% if form.errors.0 %}has-error{% endif %}">
+                <label for="{{ form.auto_id }}">{{ form.label }}</label>
+                <span class="small" style="color: red">&nbsp;&nbsp;{{ form.errors.0 }}</span>
+                {{ form }}
+            </div>
+        {% endfor %}
+        <div class="form-group"><input type="submit" class="btn btn-primary" value="发布"></div>
+    </form>
+{% endblock %}
+
+{% block js %}
+    {% load static %}
+    <script charset="utf-8" src="{% static '/kindeditor/kindeditor-all-min.js' %}"></script>
+    <script>
+        KindEditor.ready(function(K) {
+            window.editor = K.create('#id_content',
+                {
+                    width : '100%',
+                    height: '500px',
+                    resizeType: 1,
+                    uploadJson : '{% url "upload_img" %}',  // 朝后端该url提交上传文件的请求
+                    extraFileUploadParams : {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    }
+                },
+            );
+        });
+    </script>
+{% endblock %}
